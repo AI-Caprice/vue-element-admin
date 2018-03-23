@@ -121,7 +121,20 @@ export function export_json_to_excel(th, jsonData, defaultTitle) {
     /* original data */
 
     var data = jsonData;
-    data.unshift(th);
+    let tempTh=[]
+    let key
+    for(let item of th ){
+        if(Object.prototype.toString.call(item)==="[object Object]"){
+          key=Object.keys(item)[0]
+          tempTh=tempTh.concat(item[key])
+        }else{
+            tempTh.push(item)
+        }
+    }
+    console.log(key,tempTh)
+    data.unshift(['','b','c','d','e']);
+    data.unshift(tempTh);
+
     var ws_name = "SheetJS";
 
     var wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
@@ -148,7 +161,28 @@ export function export_json_to_excel(th, jsonData, defaultTitle) {
         }
       }
     }
+    console.log(result)
+
     ws['!cols'] = result;
+    ws["!merges"] = [
+        { s: {  r: 0 ,c: 0,}, e: {  r: 1 ,c: 0} },
+        { s: {  r: 0 ,c: 1,}, e: {  r: 0 ,c: 4} },
+
+        // { s: { c: 0, r: 9 }, e: { c: 0, r: 12 } },
+        // { s: { c: 1, r: 9 }, e: { c: 1, r: 12 } },
+        // { s: { c: 2, r: 9 }, e: { c: 2, r: 12 } },
+        // { s: { c: 3, r: 9 }, e: { c: 3, r: 12 } },
+        // { s: { c: 4, r: 9 }, e: { c: 4, r: 12 } },
+        // { s: { c: 5, r: 9 }, e: { c: 5, r: 12 } },
+        // { s: { c: 6, r: 9 }, e: { c: 6, r: 12 } }
+    ]
+
+    // ws["!merges"].forEach(function(m) {
+    //     /* first row with merged columns */
+    //     if(m.s.r == 5 && m.e.r == 5) for(var i = m.s.c+1; i <= m.e.c; ++i) aoa[0][i] = aoa[0][m.s.c];
+    //     /* first two rows of a given column */
+    //     if(m.s.r == 5 && m.e.r == 6 && m.s.c == m.e.c) { aoa[1][m.s.c] = aoa[0][m.s.c]; aoa[0][m.s.c] = ""; }
+    //   });
 
     /* add worksheet to workbook */
     wb.SheetNames.push(ws_name);
