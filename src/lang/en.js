@@ -41,6 +41,7 @@ export default {
     excel: 'Excel',
     exportExcel: 'Export Excel',
     selectExcel: 'Export Selected',
+    mergedExcel: 'Merged Cell',
     uploadExcel: 'Upload Excel',
     zip: 'Zip',
     exportZip: 'Export Zip',

@@ -212,6 +212,7 @@ export const asyncRouterMap = [
     children: [
       { path: 'export-excel', component: _import('excel/exportExcel'), name: 'exportExcel', meta: { title: 'exportExcel' }},
       { path: 'export-selected-excel', component: _import('excel/selectExcel'), name: 'selectExcel', meta: { title: 'selectExcel' }},
+      { path: 'export-merged-excel', component: _import('excel/mergedExcel'), name: 'mergedExcel', meta: { title: 'mergedExcel' }},
       { path: 'upload-excel', component: _import('excel/uploadExcel'), name: 'uploadExcel', meta: { title: 'uploadExcel' }}
     ]
   },

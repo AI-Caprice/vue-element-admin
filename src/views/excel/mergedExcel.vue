@@ -1,0 +1,91 @@
+<template>
+ <!-- $t is vue-i18n global function to translate lang -->
+
+  <div class="app-container">
+    <code>
+      如果你有修改excel 单元格样式的需求可能需要使用 js-xlsx 的
+      <a target="_blank" class="link-type" href="http://sheetjs.com/pro">Pro</a>
+      版本，或者使用社区版本<a target="_blank" class="link-type" href="https://www.npmjs.com/package/xlsx-style"> xlsx-style</a>
+    </code>
+    <el-button style='margin-bottom:20px;' type="primary" icon="document" @click="handleDownload" :loading="downloadLoading">{{$t('excel.export')}} excel</el-button>
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit highlight-current-row>
+      <el-table-column align="center" label='Id' width="95">
+        <template slot-scope="scope">
+          {{scope.$index}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Title">
+        <template slot-scope="scope">
+          {{scope.row.title}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Author" width="110" align="center">
+        <template slot-scope="scope">
+          <el-tag>{{scope.row.author}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Readings" width="115" align="center">
+        <template slot-scope="scope">
+          {{scope.row.pageviews}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Date" width="220">
+        <template slot-scope="scope">
+          <i class="el-icon-time"></i>
+          <span>{{scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script>
+import { fetchList } from '@/api/article'
+import { parseTime } from '@/utils'
+
+export default {
+  name: 'exportExcel',
+  data() {
+    return {
+      list: null,
+      listLoading: true,
+      downloadLoading: false,
+      filename: ''
+    }
+  },
+  created() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.listLoading = true
+      fetchList().then(response => {
+        this.list = response.data.items
+        this.listLoading = false
+      })
+    },
+    handleDownload() {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['Id', { 'Info': ['Title', 'Author', 'Readings', 'Date'] }]
+        const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
+        const list = this.list
+        const data = this.formatJson(filterVal, list)
+        // console.log(tHeader)
+
+        excel.export_json_to_excel(tHeader, data, this.filename)
+        this.downloadLoading = false
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
+    }
+  }
+}
+</script>
